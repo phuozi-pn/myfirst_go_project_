@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import logo from '../assets/logo.png';
+import logo from '../assets/logo.jpg';
 import { ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 
