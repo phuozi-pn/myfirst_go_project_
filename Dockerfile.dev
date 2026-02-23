@@ -1,0 +1,25 @@
+# Dockerfile.dev
+# ----------------------------------------------------
+# 基础镜像：Node.js 20 Alpine 版本，用于运行 Vite 开发服务器
+FROM node:20-alpine
+
+# 设置工作目录
+WORKDIR /app
+
+# (可选) 如果你的项目有依赖需要本地编译 (native modules)，取消注释安装这些工具
+RUN apk add --no-cache python3 make g++
+
+# 复制 package.json 和 package-lock.json (利用 Docker 缓存)
+# 这一步只在 package.json 或 lockfile 改变时才会重新执行 npm ci
+COPY package*.json ./
+COPY package-lock.json ./
+
+# 安装所有依赖，包括开发依赖 (npm run dev 需要 Vite、TypeScript、ESLint 等)
+RUN npm ci
+
+# 暴露 Vite 开发服务器的端口 (Vite 默认 5173)
+EXPOSE 5173
+
+# 定义容器启动时执行的命令，启动 Vite 开发服务器
+# 这将运行你的 npm run dev 脚本，从而启动 Vite dev server
+CMD ["npm", "run", "dev"]

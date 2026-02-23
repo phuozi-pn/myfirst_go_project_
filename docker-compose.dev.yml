@@ -1,0 +1,20 @@
+# docker-compose.dev.yml
+# ----------------------------------------------------
+version: "3.8"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev # <--- 指向我们刚刚创建的开发 Dockerfile
+    volumes:
+      - ./:/app:cached            # <--- 关键：将本地代码挂载到容器的 /app 目录
+      - /app/node_modules         # <--- 匿名卷，保护容器内的 node_modules 不被主机覆盖
+    ports:
+      - "5173:5173"               # <--- 将宿主机 5173 端口映射到容器 5173 端口
+    environment:
+      # 强制 Vite 监听所有网络接口，这样宿主机才能访问
+      - VITE_DEV_SERVER_HOST=0.0.0.0
+      # 强制 Vite 使用文件轮询，解决 Windows/WSL2 文件变更通知问题
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true              # 保持标准输入打开，以便在容器内交互
+    tty: true                     # 分配一个伪 TTY
